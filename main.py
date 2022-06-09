@@ -61,11 +61,19 @@ def evaluateAnti(board, depth):
 def iterativeDeepening(board, time_limit):
     us = board.turn
     avtime = 0
-    if us:
-        avtime += time_limit.white_clock / 100
-        inc = time_limit.white_inc
-        if inc * 3 < avtime:
-            avtime += (inc * 7) / 15
+    if hasattr(time_limit, time):
+        avtime = time_limit.time / 5
+    else:
+        if us:
+            avtime += time_limit.white_clock / 100
+            inc = time_limit.white_inc
+            if inc * 3 < avtime:
+                avtime += (inc * 7) / 15
+        else:
+            avtime += time_limit.black_clock / 100
+            inc = time_limit.black_inc
+            if inc * 3 < avtime:
+                avtime += (inc * 7) / 15
     bestMove = board.legal_moves[0]
     score = 0
     starttime = time.time()
