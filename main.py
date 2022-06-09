@@ -8,13 +8,12 @@ mateScore = 10000
 
 
 def negamax(board, depth, ply):
-
     if board.is_game_over():
         result = board.outcome()
         us = board.turn
         return (result.winner is us) * mateScore - (result.winner is not us) * mateScore, 0
     elif depth == 0:
-        return evaluate(board, depth), 0
+        return -evaluate(board, depth), 0
 
     bestScore = -100000
     bestMove = chess.Move(chess.A2, chess.A4)
@@ -64,7 +63,8 @@ def evaluateAnti(board, depth):
 def iterativeDeepening(board, time_limit):
     us = board.turn
     avtime = 0
-    if hasattr(time_limit, "time"):
+    print(time_limit)
+    if time_limit.time is not None:
         avtime = time_limit.time / 5
     else:
         if us:
@@ -77,10 +77,7 @@ def iterativeDeepening(board, time_limit):
             inc = time_limit.black_inc
             if inc * 3 < avtime:
                 avtime += (inc * 7) / 15
-    print(type(board))
-    print(board)
-    print(board.legal_moves.count())
-    # print([m for m in board.legal_moves])
+    avtime /= 2
     bestMove = list(board.legal_moves)[0]
     score = 0
     starttime = time.time()
