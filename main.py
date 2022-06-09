@@ -61,7 +61,7 @@ def evaluateAnti(board, depth):
 def iterativeDeepening(board, time_limit):
     us = board.turn
     avtime = 0
-    if hasattr(time_limit, time):
+    if hasattr(time_limit, "time"):
         avtime = time_limit.time / 5
     else:
         if us:
