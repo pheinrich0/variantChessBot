@@ -1,6 +1,7 @@
 import chess
 import chess.variant
 from chess.engine import PlayResult, InfoDict, PovScore, Cp
+
 import time
 
 mateScore = 10000
@@ -11,9 +12,9 @@ def negamax(board, depth, ply):
     if board.is_game_over():
         result = board.outcome()
         us = board.turn
-        return (result.winner is us) * mateScore - (result.winner is not us) * mateScore
+        return (result.winner is us) * mateScore - (result.winner is not us) * mateScore, 0
     elif depth == 0:
-        return evaluate(board)
+        return evaluate(board, depth), 0
 
     bestScore = -100000
     bestMove = chess.Move(chess.A2, chess.A4)
@@ -34,7 +35,9 @@ def evaluate(board, depth):
     result = board.outcome()
     if result:
         us = board.turn
-        return (result.winner is us) * mateScore - (result.winner is not us) * mateScore
+        return (result.winner is us) * mateScore * (depth + 1) - (
+            result.winner is not us
+        ) * mateScore * (depth + 1)
 
     bType = type(board).uci_variant
     if bType == chess.variant.AntichessBoard:
@@ -46,8 +49,8 @@ def evaluate(board, depth):
 def evaluateStandard(board, depth):
     eval = 0
     for pt in range(1, 7):
-        eval += len([sq for sq in board.pieces(pt, 1)]) * matScores[pt - 1]
-        eval -= [sq for sq in board.pieces(pt, 0)] * matScores[pt - 1]
+        eval += len(board.pieces(pt, 1)) * matScores[pt - 1]
+        eval -= len(board.pieces(pt, 0)) * matScores[pt - 1]
     if board.turn:
         return eval
     else:
@@ -74,7 +77,11 @@ def iterativeDeepening(board, time_limit):
             inc = time_limit.black_inc
             if inc * 3 < avtime:
                 avtime += (inc * 7) / 15
-    bestMove = board.legal_moves[0]
+    print(type(board))
+    print(board)
+    print(board.legal_moves.count())
+    # print([m for m in board.legal_moves])
+    bestMove = list(board.legal_moves)[0]
     score = 0
     starttime = time.time()
     depth = 1
@@ -91,4 +98,4 @@ def iterativeDeepening(board, time_limit):
         depth=depth,
         time=time.time() - starttime,
     )
-    return PlayResult(bestMove, info=info)
+    return PlayResult(bestMove, None, info=info)
