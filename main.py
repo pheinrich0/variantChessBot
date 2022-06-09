@@ -86,7 +86,7 @@ def iterativeDeepening(board, time_limit):
     score = 0
     starttime = time.time()
     depth = 1
-    while time.time() - starttime < avtime:
+    while (time.time() - starttime < avtime) and depth < 100:
         depth += 1
         score, bestMove = negamax(board, depth, 1)
         print(
