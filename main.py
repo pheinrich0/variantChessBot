@@ -128,7 +128,7 @@ def iterativeDeepening(board, time_limit, uciLogging=False):
             inc = time_limit.black_inc
             if inc * 3 < avtime:
                 avtime += (inc * 9) / 15
-    breakTime = time.time() + min(avtime, 0.6 * our_clock)
+    breakTime = time.time() + min(avtime, 0.7 * our_clock)
     avtime /= 2
     avtime = min(breakTime / 2, avtime)
     bestMove = list(board.legal_moves)[0]
@@ -141,6 +141,8 @@ def iterativeDeepening(board, time_limit, uciLogging=False):
         score, oldbestMove = negamax(board, depth, 1, breakTime)
         if time.time() < breakTime:
             bestMove = oldbestMove
+        else:
+            break
         if uciLogging:
             print(
                 f"info depth {depth} score cp {score} time {round((time.time()-starttime)*1000)} pv {bestMove.uci()}"
