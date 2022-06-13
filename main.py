@@ -95,6 +95,8 @@ def evaluateHorde(board, depth):
 
 def evaluate3check(board, depth):
     eval = evaluateStandard(board, depth)
+    eval += (3 - board.remaining_checks[board.turn])^ 2 * 250
+    eval -= (3 - board.remaining_checks[not board.turn])^ 2 * 250
     return eval
 
 
