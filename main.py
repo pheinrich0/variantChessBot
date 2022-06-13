@@ -85,6 +85,8 @@ def evaluateKOTH(board, depth):
 
 def evaluateRacing(board, depth):
     eval = evaluateStandard(board, depth)
+    eval += chess.square_rank(board.king(board.turn))*100
+    eval -= chess.square_rank(board.king(not board.turn))*100
     return eval
 
 
