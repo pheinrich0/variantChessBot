@@ -105,7 +105,8 @@ def evaluateCrazyhouse(board, depth):
     pockets = board.pockets
     for pt in range(1, 6):
         eval += (pockets[us].count(pt) * matScores[pt - 1]) // 3
-        eval -= (pockets[opp].count(pt) * matScores[pt - 1]) // 3
+        eval -= (pockets[opp] * matScores[pt - 1]) // 3
+    print("returning crazy eval")
     return eval
 
 def iterativeDeepening(board, time_limit, uciLogging=False):
