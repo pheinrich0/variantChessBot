@@ -13,7 +13,10 @@ def negamax(board, depth, ply, breakTime, alpha=-sys.maxsize, beta=sys.maxsize):
 
     bestScore = -sys.maxsize
     bestMove = chess.Move(chess.A2, chess.A4)
-    for m in board.legal_moves:
+    sortKey = lambda m: materialDiff(m, board)
+    ms = list(board.legal_moves)
+    ms.sort(key=sortKey)
+    for m in ms:
         board.push(m)
         tempScore = -negamax(board, depth - 1, ply + 1, breakTime, -beta, -alpha)[0]
         board.pop()
@@ -85,8 +88,8 @@ def evaluateKOTH(board, depth):
 
 def evaluateRacing(board, depth):
     eval = evaluateStandard(board, depth)
-    eval += chess.square_rank(board.king(board.turn))*100
-    eval -= chess.square_rank(board.king(not board.turn))*100
+    eval += chess.square_rank(board.king(board.turn)) * 100
+    eval -= chess.square_rank(board.king(not board.turn)) * 100
     return eval
 
 
@@ -97,8 +100,8 @@ def evaluateHorde(board, depth):
 
 def evaluate3check(board, depth):
     eval = evaluateStandard(board, depth)
-    eval += (3 - board.remaining_checks[board.turn])^ 2 * 250
-    eval -= (3 - board.remaining_checks[not board.turn])^ 2 * 250
+    eval += (3 - board.remaining_checks[board.turn]) ^ 2 * 250
+    eval -= (3 - board.remaining_checks[not board.turn]) ^ 2 * 300
     return eval
 
 
@@ -112,13 +115,23 @@ def evaluateCrazyhouse(board, depth):
         eval -= (pockets[opp].count(pt) * matScores[pt - 1]) // 3
     return eval
 
+
+def materialDiff(move, board):
+    taken = board.piece_at(move.to_square)
+    if taken:
+        return taken.piece_type - board.piece_at(move.from_square).piece_type
+    else:
+        return -10
+
+
 def iterativeDeepening(board, time_limit, uciLogging=False):
     us = board.turn
     avtime = 0
     print(time_limit)
     our_clock = 0
     if hasattr(time_limit, "time") and time_limit.time is not None:
-        avtime = time_limit.time / 5
+        avtime = time_limit.time / 2
+        our_clock = 20
     else:
         if us:
             our_clock = time_limit.white_clock
@@ -132,7 +145,7 @@ def iterativeDeepening(board, time_limit, uciLogging=False):
             inc = time_limit.black_inc
             if inc * 3 < avtime:
                 avtime += (inc * 9) / 15
-    breakTime = time.time() + min(avtime, 0.7 * our_clock)
+    breakTime = time.time() + min(2 * avtime, 0.7 * our_clock)
     avtime /= 2
     avtime = min(breakTime / 2, avtime)
     bestMove = list(board.legal_moves)[0]
