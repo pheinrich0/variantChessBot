@@ -24,8 +24,12 @@ for str in [
     btype = chess.variant.find_variant(str)
     b = btype()
     for i in range(1, 30):
-        m = random.choice(list(b.legal_moves))
-        b.push(m)
+        ms = list(b.legal_moves)
+        if len(ms):
+            m = random.choice(ms)
+            b.push(m)
+        else:
+            break
     if b.is_game_over():
         print(f"aborted test of {str}, game over after test moves\n")
         continue
