@@ -10,12 +10,15 @@ mateScore = 10000
 def negamax(board, depth, ply, breakTime, alpha=-sys.maxsize, beta=sys.maxsize):
     if depth == 0 or board.is_game_over(claim_draw=board.ply() > 70):
         return evaluate(board, depth), 0
-
+    if board.is_check():
+        depth += 1
     bestScore = -sys.maxsize
     bestMove = chess.Move(chess.A2, chess.A4)
     sortKey = lambda m: materialDiff(m, board)
     ms = list(board.legal_moves)
-    ms.sort(key=sortKey)
+    # no influence of sorting at the horizon
+    if depth > 1:
+        ms.sort(key=sortKey)
     for m in ms:
         board.push(m)
         tempScore = -negamax(board, depth - 1, ply + 1, breakTime, -beta, -alpha)[0]
@@ -135,19 +138,20 @@ def iterativeDeepening(board, time_limit, uciLogging=False):
     else:
         if us:
             our_clock = time_limit.white_clock
-            avtime += time_limit.white_clock / 70
+            avtime += time_limit.white_clock / 50
             inc = time_limit.white_inc
             if inc * 3 < avtime:
-                avtime += (inc * 9) / 15
+                avtime += (inc * 3) / 4
         else:
             our_clock = time_limit.black_clock
-            avtime += time_limit.black_clock / 70
+            avtime += time_limit.black_clock / 50
             inc = time_limit.black_inc
             if inc * 3 < avtime:
-                avtime += (inc * 9) / 15
-    breakTime = time.time() + min(2 * avtime, 0.7 * our_clock)
+                avtime += (inc * 3) / 4
+    breakTime = min(2 * avtime, 0.7 * our_clock)
     avtime /= 2
-    avtime = min(breakTime / 2, avtime)
+    avtime = min(breakTime / 3, avtime)
+    breakTime +=  time.time()
     bestMove = list(board.legal_moves)[0]
     oldbestMove = bestMove
     score = 0
