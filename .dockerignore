@@ -1,0 +1,8 @@
+__pycache__
+.vscode
+LICENSE
+README.md
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
