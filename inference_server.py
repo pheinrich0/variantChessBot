@@ -20,7 +20,6 @@ def hello_world():
     btype = chess.variant.find_variant(variant)
     if fen == "startpos":
       fen = btype.starting_fen
-    print(btype)
     board = btype(fen)
     time = int(time)
     lim = timelim(time/1000)
