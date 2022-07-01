@@ -17,9 +17,11 @@ app = Flask(__name__)
 def hello_world():
     data = request.get_data(as_text=True)
     variant, fen, time = data.splitlines()
+    btype = chess.variant.find_variant(variant)
     if fen == "startpos":
-      fen = chess.STARTING_FEN
-    board = chess.variant.find_variant(variant)(fen)
+      fen = btype.starting_fen
+    print(btype)
+    board = btype(fen)
     time = int(time)
     lim = timelim(time/1000)
     result = main.iterativeDeepening(board, lim)
