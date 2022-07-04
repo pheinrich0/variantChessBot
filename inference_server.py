@@ -23,7 +23,7 @@ def hello_world():
     board = btype(fen)
     time = int(time)
     lim = timelim(time/1000)
-    result = main.iterativeDeepening(board, lim)
+    result = main.iterativeDeepening(board, lim, True)
     return f"{result.info['score'].relative}\n{result.move}"
 
 
