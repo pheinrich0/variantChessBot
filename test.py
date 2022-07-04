@@ -40,3 +40,5 @@ for str in [
     main.iterativeDeepening(b, t1)
     main.iterativeDeepening(b, t2)
     print()
+
+print("Test succeeded!")

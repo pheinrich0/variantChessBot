@@ -1,13 +1,23 @@
 import chess
+from chess import Board
 import chess.variant
 from chess.engine import PlayResult, InfoDict, PovScore, Cp
 import sys
 import time
 
+from pst import table
+
 mateScore = 10000
 
 
-def negamax(board, depth, ply, breakTime, alpha=-sys.maxsize, beta=sys.maxsize):
+def negamax(
+    board: Board,
+    depth: int,
+    ply: int,
+    breakTime,
+    alpha: int = -sys.maxsize,
+    beta: int = sys.maxsize,
+) -> tuple[int, chess.Move]:
     if depth == 0 or board.is_game_over(claim_draw=board.ply() > 70):
         return evaluate(board, depth), 0
     if board.is_check():
@@ -38,7 +48,7 @@ def negamax(board, depth, ply, breakTime, alpha=-sys.maxsize, beta=sys.maxsize):
 matScores = [100, 315, 330, 500, 900, 200]
 
 
-def evaluate(board, depth):
+def evaluate(board: Board, depth: int) -> int:
     result = board.outcome(claim_draw=board.ply() > 70)
     if result:
         us = board.turn
@@ -59,56 +69,71 @@ def evaluate(board, depth):
     elif bType == chess.variant.ThreeCheckBoard:
         return evaluate3check(board, depth)
     elif bType == chess.variant.CrazyhouseBoard:
-        return evaluateStandard(board, depth)
+        return evaluateCrazyhouse(board, depth)
     else:
         return evaluateStandard(board, depth)
 
 
-def evaluateStandard(board, depth):
+def evaluateStandard(board: Board, depth: int, usePST: bool = True) -> int:
     eval = 0
     us = board.turn
     opp = not us
     for pt in range(1, 7):
         eval += len(board.pieces(pt, us)) * matScores[pt - 1]
         eval -= len(board.pieces(pt, opp)) * matScores[pt - 1]
+    if usePST:
+        pstScore = 0
+        map = board.piece_map()
+        for sq in map:
+            p = map[sq]
+            pt, c = p.piece_type, p.color
+            if c:
+                pstScore += table[(pt - 1) * 64 + chess.square_mirror(sq)]
+            else:
+                pstScore -= table[(pt - 1) * 64 + sq]
+        if board.turn:
+            eval += pstScore
+        else:
+            eval -= pstScore
+
     return eval
 
 
-def evaluateAnti(board, depth):
+def evaluateAnti(board: Board, depth: int) -> int:
     eval = -evaluateStandard(board, depth)
     return eval
 
 
-def evaluateAtomic(board, depth):
+def evaluateAtomic(board: Board, depth: int) -> int:
     eval = evaluateStandard(board, depth)
     return eval
 
 
-def evaluateKOTH(board, depth):
+def evaluateKOTH(board: Board, depth: int) -> int:
     eval = evaluateStandard(board, depth)
     return eval
 
 
-def evaluateRacing(board, depth):
-    eval = evaluateStandard(board, depth)
+def evaluateRacing(board: Board, depth: int) -> int:
+    eval = evaluateStandard(board, depth, False)
     eval += chess.square_rank(board.king(board.turn)) * 100
     eval -= chess.square_rank(board.king(not board.turn)) * 100
     return eval
 
 
-def evaluateHorde(board, depth):
+def evaluateHorde(board: Board, depth: int) -> int:
     eval = evaluateStandard(board, depth)
     return eval
 
 
-def evaluate3check(board, depth):
+def evaluate3check(board: Board, depth: int) -> int:
     eval = evaluateStandard(board, depth)
     eval += (3 - board.remaining_checks[board.turn]) ^ 2 * 250
     eval -= (3 - board.remaining_checks[not board.turn]) ^ 2 * 300
     return eval
 
 
-def evaluateCrazyhouse(board, depth):
+def evaluateCrazyhouse(board: Board, depth: int) -> int:
     eval = 0
     us = board.turn
     opp = not us
@@ -119,7 +144,7 @@ def evaluateCrazyhouse(board, depth):
     return eval
 
 
-def materialDiff(move, board):
+def materialDiff(move: chess.Move, board: Board):
     taken = board.piece_at(move.to_square)
     if taken:
         return taken.piece_type - board.piece_at(move.from_square).piece_type
@@ -127,7 +152,7 @@ def materialDiff(move, board):
         return -10
 
 
-def iterativeDeepening(board, time_limit, uciLogging=False):
+def iterativeDeepening(board: Board, time_limit, uciLogging: bool = False):
     us = board.turn
     avtime = 0
     print(time_limit)
@@ -151,7 +176,7 @@ def iterativeDeepening(board, time_limit, uciLogging=False):
     breakTime = min(2 * avtime, 0.7 * our_clock)
     avtime /= 2
     avtime = min(breakTime / 3, avtime)
-    breakTime +=  time.time()
+    breakTime += time.time()
     bestMove = list(board.legal_moves)[0]
     oldbestMove = bestMove
     score = 0
