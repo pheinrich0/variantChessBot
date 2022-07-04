@@ -79,23 +79,17 @@ def evaluateStandard(board: Board, depth: int, usePST: bool = True) -> int:
     us = board.turn
     opp = not us
     for pt in range(1, 7):
-        eval += len(board.pieces(pt, us)) * matScores[pt - 1]
-        eval -= len(board.pieces(pt, opp)) * matScores[pt - 1]
-    if usePST:
-        pstScore = 0
-        map = board.piece_map()
-        for sq in map:
-            p = map[sq]
-            pt, c = p.piece_type, p.color
-            if c:
-                pstScore += table[(pt - 1) * 64 + chess.square_mirror(sq)]
-            else:
-                pstScore -= table[(pt - 1) * 64 + sq]
-        if board.turn:
-            eval += pstScore
-        else:
-            eval -= pstScore
-
+        usPT = board.pieces(pt, us)
+        eval += len(usPT) * matScores[pt - 1]
+        oppPT = board.pieces(pt, opp)
+        eval -= len(oppPT) * matScores[pt - 1]
+        if usePST:
+            for sq in usPT:
+                sq = chess.square_mirror(sq) if us else sq
+                eval += table[(pt - 1) * 64 + sq]
+            for sq in oppPT:
+                sq = chess.square_mirror(sq) if opp else sq
+                eval += table[(pt - 1) * 64 + sq]
     return eval
 
 
