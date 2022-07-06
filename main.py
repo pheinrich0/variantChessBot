@@ -53,7 +53,7 @@ def evaluate(board: Board, depth: int) -> int:
     if result:
         us = board.turn
         return (result.winner is us) * mateScore * (depth + 1) - (
-            result.winner is not us
+            result.winner is (not us)
         ) * mateScore * (depth + 1)
     bType = type(board)
     if bType == chess.variant.AntichessBoard:
