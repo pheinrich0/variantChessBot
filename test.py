@@ -1,4 +1,4 @@
-import main
+import engine
 import chess
 import chess.variant
 import random
@@ -38,8 +38,8 @@ for str in [
         print(b.pockets)
     print(f"now testing {str}\n")
 
-    main.iterativeDeepening(b, t1)
-    main.iterativeDeepening(b, t2)
+    engine.iterativeDeepening(b, t1)
+    engine.iterativeDeepening(b, t2)
     print()
 
 b = chess.Board()
