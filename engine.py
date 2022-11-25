@@ -52,9 +52,7 @@ def evaluate(board: Board, depth: int) -> int:
     result = board.outcome(claim_draw=board.ply() > 70)
     if result:
         us = board.turn
-        return (result.winner is us) * mateScore * (depth + 1) - (
-            result.winner is (not us)
-        ) * mateScore * (depth + 1)
+        return (result.winner is us) * mateScore - depth - (result.winner is (not us)) * mateScore + depth
     bType = type(board)
     if bType == chess.variant.AntichessBoard:
         return evaluateAnti(board, depth)
@@ -89,7 +87,7 @@ def evaluateStandard(board: Board, depth: int, usePST: bool = True) -> int:
                 eval += table[(pt - 1) * 64 + sq]
             for sq in oppPT:
                 sq = chess.square_mirror(sq) if opp else sq
-                eval += table[(pt - 1) * 64 + sq]
+                eval -= table[(pt - 1) * 64 + sq]
     return eval
 
 
