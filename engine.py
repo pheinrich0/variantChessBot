@@ -5,7 +5,12 @@ from chess.engine import PlayResult, InfoDict, PovScore, Cp
 import sys
 import time
 
-from variantChessBot.pst import table
+
+try:
+    from variantChessBot.pst import table
+except:
+    from pst import table
+#
 
 mateScore = 10000
 
