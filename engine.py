@@ -24,7 +24,7 @@ def negamax(
     beta: int = sys.maxsize,
 ) -> tuple[int, chess.Move]:
     if depth == 0 or board.is_game_over(claim_draw=board.ply() > 40):
-        return evaluate(board, depth), 0
+        return evaluate(board, depth, ply), 0
     if board.is_check():
         depth += 1
     bestScore = -sys.maxsize
@@ -53,11 +53,11 @@ def negamax(
 matScores = [100, 315, 330, 500, 900, 200]
 
 
-def evaluate(board: Board, depth: int) -> int:
+def evaluate(board: Board, depth: int, ply: int = 0) -> int:
     result = board.outcome(claim_draw=board.ply() > 70)
     if result:
         us = board.turn
-        return (result.winner is us) * mateScore - depth - (result.winner is (not us)) * mateScore + depth
+        return (result.winner is us) * (mateScore - ply ) - (result.winner is (not us)) * (mateScore - ply)
     bType = type(board)
     if bType == chess.variant.AntichessBoard:
         return evaluateAnti(board, depth)
