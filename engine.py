@@ -38,7 +38,7 @@ def negamax(
     for idx in range(len(ms)):
         m = ms[idx]
         board.push(m)
-        tempScore = -negamax(board, depth - 1*((keys[idx]==-10) or (keys[idx] >= 0)), ply + 1, breakTime, -beta, -alpha)[0]
+        tempScore = -negamax(board, depth - 1, ply + 1, breakTime, -beta, -alpha)[0]
         board.pop()
         if tempScore > bestScore:
             bestScore = tempScore
