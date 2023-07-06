@@ -34,10 +34,9 @@ def negamax(
     # no influence of sorting at the horizon
     if depth > 1:
         ms.sort(key=sortKey)
-    for idx in range(len(ms)):
-        m = ms[idx]
+    for m in ms:
         board.push(m)
-        tempScore = -negamax(board, depth - 1*(sortKey==-10 or sortKey>=0), ply + 1, breakTime, -beta, -alpha)[0]
+        tempScore = -negamax(board, depth - 1*((sortKey(m)==-10) or (sortKey(m) >= 0)), ply + 1, breakTime, -beta, -alpha)[0]
         board.pop()
         if tempScore > bestScore:
             bestScore = tempScore
