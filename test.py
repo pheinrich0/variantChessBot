@@ -39,8 +39,8 @@ for str in [
         print(b.pockets)
     print(f"now testing {str}\n")
 
-    engine.iterativeDeepening(b, t1)
-    engine.iterativeDeepening(b, t2)
+    for t in [t1, t2, t3]:
+        engine.iterativeDeepening(b, t)
     print()
 
 b = chess.Board()
