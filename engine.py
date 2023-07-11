@@ -23,18 +23,18 @@ def negamax(
     alpha: int = -sys.maxsize,
     beta: int = sys.maxsize,
 ) -> tuple[int, chess.Move]:
+    ms = list(board.legal_moves)
     if depth == 0 or board.is_game_over(claim_draw=board.ply() > 40):
-        return evaluate(board, depth, ply), 0
+        return evaluate(board, depth, ply), next(board.legal_moves) if len(ms)>0 else chess.Move.null()
     if board.is_check():
         depth += 1
     bestScore = -sys.maxsize
-    bestMove = chess.Move(chess.A2, chess.A4)
     sortKey = lambda m: materialDiff(m, board)
-    ms = list(board.legal_moves)
     keys = [sortKey(m) for m in ms]
     # no influence of sorting at the horizon
     if depth > 1:
         ms.sort(key=sortKey)
+    bestMove = ms[0]
     for idx in range(len(ms)):
         m = ms[idx]
         board.push(m)
