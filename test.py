@@ -8,6 +8,7 @@ import timeit
 timelim = namedtuple("time_limit", "time white_clock white_inc black_clock black_inc")
 t1 = timelim(10.0, None, None, None, None)
 t2 = timelim(None, 60.0, 5.0, 60.0, 5.0)
+t3 = timelim(None, 5.0, 5.0, 0.0, 0.0)
 # b = chess.Board()
 # main.iterativeDeepening(b, t)
 # main.iterativeDeepening(b, t2)
